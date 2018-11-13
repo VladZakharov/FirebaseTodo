@@ -1,0 +1,28 @@
+{
+  "name": "Todo",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "test": "jest",
+    "a": "react-native run-android",
+    "i": "react-native run-ios"
+  },
+  "dependencies": {
+    "@babel/runtime": "7.1.2",
+    "react": "16.5.2",
+    "react-native": "0.57.1"
+  },
+  "devDependencies": {
+    "@babel/core": "7.1.2",
+    "@babel/plugin-transform-runtime": "7.1.0",
+    "schedule": "0.4.0",
+    "babel-jest": "23.6.0",
+    "jest": "23.6.0",
+    "metro-react-native-babel-preset": "0.49.1",
+    "react-test-renderer": "16.6.1"
+  },
+  "jest": {
+    "preset": "react-native"
+  }
+}
