@@ -1,12 +1,13 @@
 {
-  "name": "Todo",
+  "name": "todo",
   "version": "0.0.1",
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "test": "jest",
     "a": "react-native run-android",
-    "i": "react-native run-ios"
+    "i": "react-native run-ios",
+    "postinstall": "cd node_modules/react-native/React/..; exec ./scripts/ios-install-third-party.sh"
   },
   "dependencies": {
     "@babel/runtime": "7.1.2",
