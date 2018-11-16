@@ -1,3 +1,5 @@
+import {DarkTheme} from "./default/colors";
+
 interface ColorTypes {
   inverse?: string;
   lightest?: string;
@@ -31,3 +33,13 @@ export enum ThemeName {
 }
 
 export type ThemeMap = { [K in ThemeName]: ThemeData };
+
+type Variables = 'global';
+
+export interface ThemeVariables {
+  $var: { [K in Variables]?: any };
+}
+
+export const themes: ThemeMap = {
+  [ThemeName.Default]: DarkTheme
+};

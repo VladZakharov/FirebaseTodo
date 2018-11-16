@@ -1,6 +1,6 @@
 import React from 'react';
 import {Platform, Text, View} from 'react-native';
-import {StyledComponent} from "../StyledComponent";
+import {StyledComponent} from "../index";
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',

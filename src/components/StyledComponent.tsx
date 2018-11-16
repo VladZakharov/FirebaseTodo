@@ -5,7 +5,7 @@ import {IThemeService} from "../service/ThemeService";
 import {RegisteredComponent} from "../shared/types";
 import {AnyObject} from "react-native-extended-stylesheet";
 
-
+// все компоненты, использующие стили должны наследоваться от StyledComponent
 export abstract class StyledComponent<P = {}, S = {}> extends Component<P, S> {
   @InjectLazy(ServiceTid.IThemeService) protected _themeService!: IThemeService;
   protected styles: AnyObject;

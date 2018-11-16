@@ -1,4 +1,4 @@
-import {ScreenMainStyles} from "../components/ScreenMain";
+import {ScreenMainStyles} from "./ScreenMain";
 import {RegisteredComponent, ScreenName} from "../shared/types";
 import {AnyObject} from "react-native-extended-stylesheet";
 

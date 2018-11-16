@@ -1,1 +1,0 @@
-export {ComponentStyles} from './component.styles'

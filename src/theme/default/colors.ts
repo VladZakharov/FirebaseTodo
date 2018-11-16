@@ -1,10 +1,6 @@
-import {ThemeData, ThemeMap, ThemeName} from '../theme.types';
+import {ThemeData} from '../theme.types';
 
-const DarkTheme: ThemeData = {
+export const DarkTheme: ThemeData = {
   $colors: {},
   $icons: {}
-};
-
-export const themes: ThemeMap = {
-  [ThemeName.Default]: DarkTheme
 };
