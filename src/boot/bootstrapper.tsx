@@ -6,10 +6,12 @@ import App from '../App';
 import {InjectLazy} from "../IoC";
 import {IThemeService} from "../service/ThemeService";
 import {ServiceTid} from "../service/service.module-tid";
+import {IPreferencesService} from "../service/PreferencesService/Preferences.service";
 
 class ReactApplication extends React.Component<{}, { isReady: boolean }> {
   public state = {isReady: false};
-  @InjectLazy(ServiceTid.IThemeService) private _themeService!: IThemeService;
+  @InjectLazy(ServiceTid.IPreferencesService) private _preferences!: IPreferencesService;
+  @InjectLazy(ServiceTid.IThemeService) private _theme!: IThemeService;
 
   constructor(props: any) {
     super(props);
@@ -25,7 +27,8 @@ class ReactApplication extends React.Component<{}, { isReady: boolean }> {
   }
 
   private async _preload() {
-    await this._themeService.initialize();
+    await this._preferences.initialize();
+    await this._theme.initialize();
 
     this.setState({isReady: true})
   }

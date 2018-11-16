@@ -1,11 +1,11 @@
-import {DarkTheme} from "./default/colors";
+import {DarkTheme, LightTheme} from "./default/colors";
 
 interface ColorTypes {
   inverse?: string;
   lightest?: string;
   lighten?: string;
   light?: string;
-  base?: string;
+  base: string;
   dark?: string;
   darken?: string;
   darkest?: string;
@@ -29,7 +29,8 @@ export interface ThemeData {
 }
 
 export enum ThemeName {
-  Default = 'Default'
+  Default = 'Default',
+  Light = 'Light'
 }
 
 export type ThemeMap = { [K in ThemeName]: ThemeData };
@@ -41,5 +42,6 @@ export interface ThemeVariables {
 }
 
 export const themes: ThemeMap = {
-  [ThemeName.Default]: DarkTheme
+  [ThemeName.Default]: DarkTheme,
+  [ThemeName.Light]: LightTheme
 };

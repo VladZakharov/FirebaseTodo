@@ -99,8 +99,8 @@ android {
 
     defaultConfig {
         applicationId "com.firebasetodo"
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
+        minSdkVersion 21
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
         ndk {
@@ -136,7 +136,15 @@ android {
     }
 }
 
+// https://github.com/react-community/jsc-android-buildscripts#international-variant
+configurations.all {
+    resolutionStrategy {
+        force 'org.webkit:android-jsc:r224109'
+    }
+}
+
 dependencies {
+    compile project(':react-native-default-preference')
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
     implementation "com.facebook.react:react-native:+"  // From node_modules
