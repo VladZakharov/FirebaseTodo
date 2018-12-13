@@ -1,0 +1,5 @@
+https://github.com/react-native-community/react-native-google-signin/issues/519
+
+https://gist.github.com/codediodeio/6dbce1305b9556c2136492522e2100f6
+
+https://developers.google.com/identity/sign-in/ios/start-integrating
