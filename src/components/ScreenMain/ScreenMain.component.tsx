@@ -1,36 +1,22 @@
 import React from 'react';
-import {Text, View} from 'react-native';
+import {Text, TouchableOpacity, View} from 'react-native';
 import {StyledComponent} from "../index";
 import {InjectLazy} from "../../IoC";
 import {ServiceTid} from "../../service/service.module-tid";
 import {IPreferencesService} from "../../service/PreferencesService";
-import firebase from 'react-native-firebase';
-import {GoogleSignin} from "react-native-google-signin";
+import {TodoService} from "../../api/TodoService/TodoService";
+import {IAuthService} from "../../api/AuthService/AuthService";
+import {ApiTid} from "../../api/api.module-tid";
+import {observer} from "mobx-react";
 
 interface Props {
 }
 
-const googleLogin = async () => {
-  try {
-    await GoogleSignin.configure();
-    const isSignedIn = await GoogleSignin.isSignedIn();
-    if (isSignedIn) {
-      await GoogleSignin.signOut();
-      await firebase.auth().signOut()
-    }
-
-    const data = await GoogleSignin.signIn();
-    // @ts-ignore
-    const credential = firebase.auth.GoogleAuthProvider.credential(data.idToken, data.accessToken);
-    const currentUser = await firebase.auth().signInWithCredential(credential);
-    console.warn(JSON.stringify(currentUser.user.toJSON()));
-  } catch (e) {
-    console.warn(e);
-  }
-};
-
+@observer
 export class ScreenMain extends StyledComponent<Props> {
   @InjectLazy(ServiceTid.IPreferencesService) protected _preferences!: IPreferencesService;
+  @InjectLazy(ApiTid.IAuthService) private authService!: IAuthService;
+
 
   async componentDidMount() {
     // setTimeout(async () => {
@@ -39,14 +25,6 @@ export class ScreenMain extends StyledComponent<Props> {
     //   await this._themeService.setTheme(nextTheme);
     // }, 1000);
 
-    await googleLogin();
-
-    firebase.database().ref('todos').once('value', function (snapshot: any) {
-      console.warn(snapshot.val())
-    }).catch((reason: any) => {
-      console.warn('ERROR: ' + reason)
-    });
-
     // firebase.database().ref('Users/').set({
     //   email: 'test',
     // }).then((data) => {
@@ -54,14 +32,52 @@ export class ScreenMain extends StyledComponent<Props> {
     // }).catch((error) => {
     //   console.warn('error ', error)
     // })
+  }
 
+  signIn = async () => {
+    try {
+      const data = await this.authService.signIn();
+      console.warn('data', data);
+    } catch (e) {
+      console.warn('data error')
+    }
+  }
+
+  signOut = async () => {
+    await this.authService.signOut();
+    console.warn('signed out');
+  }
+
+  getTodos = async () => {
+    const todoService = new TodoService();
+    try {
+      const todos = await todoService.GetTodos();
+      console.warn('todos', todos);
+    } catch (e) {
+      console.warn(e)
+    }
   }
 
   render() {
     const {styles} = this;
+    const {isSignedIn} = this.authService;
     return (
       <View style={styles.container}>
         <Text style={styles.instructions}>Тема: {this._themeService.themeName}</Text>
+        <Text style={styles.instructions}>isSignedIn: {isSignedIn ? 'yes' : 'no'}</Text>
+
+        <TouchableOpacity onPress={this.getTodos} disabled={!isSignedIn}>
+          <Text style={styles.instructions}>GetTodos</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={this.signIn} disabled={isSignedIn}>
+          <Text style={styles.instructions}>signIn</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={this.signOut} disabled={!isSignedIn}>
+          <Text style={styles.instructions}>signOut</Text>
+        </TouchableOpacity>
+
       </View>
     );
   }

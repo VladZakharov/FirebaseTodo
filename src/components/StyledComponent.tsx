@@ -11,7 +11,7 @@ export abstract class StyledComponent<P = {}, S = {}> extends Component<P, S> {
   @InjectLazy(ServiceTid.IThemeService) protected _themeService!: IThemeService;
   protected styles!: AnyObject;
 
-  protected constructor(props: any) {
+  public constructor(props: any) {
     super(props);
     autorun(() => {
       this._themeService.themeName;// для запуска autorun
