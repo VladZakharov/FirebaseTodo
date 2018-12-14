@@ -9,12 +9,14 @@ import {ServiceTid} from "../service/service.module-tid";
 import {IPreferencesService} from "../service/PreferencesService/Preferences.service";
 import {ApiTid} from "../api/api.module-tid";
 import {IAuthService} from "../api/AuthService/AuthService";
+import {ITodoService} from "../api/TodoService/TodoService";
 
 class ReactApplication extends React.Component<{}, { isReady: boolean }> {
   public state = {isReady: false};
   @InjectLazy(ServiceTid.IPreferencesService) private _preferences!: IPreferencesService;
   @InjectLazy(ServiceTid.IThemeService) private _theme!: IThemeService;
   @InjectLazy(ApiTid.IAuthService) private _authService!: IAuthService;
+  @InjectLazy(ApiTid.ITodoService) private _todoService!: ITodoService;
 
   constructor(props: any) {
     super(props);
@@ -33,6 +35,7 @@ class ReactApplication extends React.Component<{}, { isReady: boolean }> {
     await this._preferences.initialize();
     await this._theme.initialize();
     await this._authService.initialize();
+    await this._todoService.initialize();
 
     this.setState({isReady: true})
   }

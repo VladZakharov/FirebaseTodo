@@ -4,7 +4,7 @@ import {StyledComponent} from "../index";
 import {InjectLazy} from "../../IoC";
 import {ServiceTid} from "../../service/service.module-tid";
 import {IPreferencesService} from "../../service/PreferencesService";
-import {TodoService} from "../../api/TodoService/TodoService";
+import {ITodoService} from "../../api/TodoService/TodoService";
 import {IAuthService} from "../../api/AuthService/AuthService";
 import {ApiTid} from "../../api/api.module-tid";
 import {observer} from "mobx-react";
@@ -16,6 +16,7 @@ interface Props {
 export class ScreenMain extends StyledComponent<Props> {
   @InjectLazy(ServiceTid.IPreferencesService) protected _preferences!: IPreferencesService;
   @InjectLazy(ApiTid.IAuthService) private authService!: IAuthService;
+  @InjectLazy(ApiTid.ITodoService) private _todoService!: ITodoService;
 
 
   async componentDidMount() {
@@ -49,10 +50,18 @@ export class ScreenMain extends StyledComponent<Props> {
   }
 
   getTodos = async () => {
-    const todoService = new TodoService();
     try {
-      const todos = await todoService.GetTodos();
+      const todos = await this._todoService.getTodos();
       console.warn('todos', todos);
+    } catch (e) {
+      console.warn(e)
+    }
+  }
+
+  createTodo = async (title: string) => {
+    try {
+      await this._todoService.createTodo(title);
+      console.warn('ok')
     } catch (e) {
       console.warn(e)
     }
@@ -65,9 +74,15 @@ export class ScreenMain extends StyledComponent<Props> {
       <View style={styles.container}>
         <Text style={styles.instructions}>Тема: {this._themeService.themeName}</Text>
         <Text style={styles.instructions}>isSignedIn: {isSignedIn ? 'yes' : 'no'}</Text>
+        <Text style={styles.instructions}>{this.authService.userUid}</Text>
+
 
         <TouchableOpacity onPress={this.getTodos} disabled={!isSignedIn}>
           <Text style={styles.instructions}>GetTodos</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => this.createTodo('test_' + new Date().toString())} disabled={!isSignedIn}>
+          <Text style={styles.instructions}>createTodo</Text>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={this.signIn} disabled={isSignedIn}>
@@ -77,6 +92,14 @@ export class ScreenMain extends StyledComponent<Props> {
         <TouchableOpacity onPress={this.signOut} disabled={!isSignedIn}>
           <Text style={styles.instructions}>signOut</Text>
         </TouchableOpacity>
+
+        {this._todoService.isBusy && <Text>loading...</Text>}
+
+        {
+          Object.keys(this._todoService.todos).map(key => (
+            <Text>{this._todoService.todos[key].title}</Text>
+          ))
+        }
 
       </View>
     );

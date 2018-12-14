@@ -7,6 +7,7 @@ import {observable} from "mobx";
 
 export interface IAuthService extends ISupportInitialize {
   isSignedIn: boolean;
+  userUid: string | undefined;
 
   signIn(): Promise<any>;
 
@@ -14,13 +15,20 @@ export interface IAuthService extends ISupportInitialize {
 }
 
 @Injectable()
-class AuthService implements IAuthService {
-  @observable public isSignedIn!: boolean;
+export class AuthService implements IAuthService {
+  @observable public isSignedIn: boolean = false;
+  @observable public userUid: string | undefined = undefined;
 
   public async initialize(): Promise<boolean> {
     try {
       await GoogleSignin.configure();
       this.isSignedIn = await GoogleSignin.isSignedIn();
+      if (this.isSignedIn) {
+        const data = await GoogleSignin.signInSilently();
+        const credential = firebase.auth.GoogleAuthProvider.credential(data.idToken, data.accessToken);
+        const currentUser = await firebase.auth().signInWithCredential(credential);
+        this.userUid = currentUser.user.toJSON().uid;
+      }
       return true
     } catch (e) {
       return false
@@ -38,12 +46,26 @@ class AuthService implements IAuthService {
       // @ts-ignore
       const credential = firebase.auth.GoogleAuthProvider.credential(data.idToken, data.accessToken);
       const currentUser = await firebase.auth().signInWithCredential(credential);
+      const userData = currentUser.user.toJSON();
+      await this._addNewUser(userData.uid, userData.displayName)
+      this.userUid = userData.uid;
       this.isSignedIn = true;
-      // console.warn(JSON.stringify(currentUser.user.toJSON()));
-      return currentUser
+      return currentUser.user.toJSON()
     } catch (e) {
       return false
     }
+  }
+
+  private _addNewUser = (userUid: string, displayName: string) => {
+    return new Promise((resolve) => {
+      firebase.database().ref(`users/${userUid}/`).set({displayName}, (error) => {
+        if (error) {
+          resolve(false)
+        } else {
+          resolve(true)
+        }
+      });
+    });
   }
 
   public async signOut(): Promise<any> {
@@ -52,6 +74,7 @@ class AuthService implements IAuthService {
         await GoogleSignin.signOut();
         await firebase.auth().signOut();
         this.isSignedIn = false;
+        this.userUid = undefined;
       }
       return true
     } catch (e) {
