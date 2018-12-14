@@ -6,19 +6,24 @@ import {TodoMap} from "./TodoService.types";
 import {ApiTid} from "../api.module-tid";
 import {IAuthService} from "../AuthService/AuthService";
 
+const todosDefaultValue = {};
+
 export interface ITodoService extends ISupportInitialize {
   todos: TodoMap;
   isBusy: boolean;
 
-  getTodos(): Promise<any>;
+  updateTodos(): Promise<any>;
 
   createTodo(title: string): Promise<any>;
 }
 
 @Injectable()
 export class TodoService implements ITodoService {
-  @observable public todos: TodoMap = {};
+  @observable public todos: TodoMap = todosDefaultValue;
   @observable public isBusy: boolean = false;
+  private _todosListener: any = (snapshot: any) => {
+    this.todos = snapshot.val() || todosDefaultValue;
+  };
   @InjectLazy(ApiTid.IAuthService) private _authService!: IAuthService;
 
   public async initialize(): Promise<any> {
@@ -27,34 +32,32 @@ export class TodoService implements ITodoService {
         await this._startListenTodos()
       } else {
         await this._stopListenTodos();
-        this.todos = {}
+        this.todos = todosDefaultValue
       }
     });
   }
 
-  public async getTodos(): Promise<any> {
-    return new Promise((resolve, reject) => {
+  public async updateTodos(): Promise<any> {
+    return new Promise((resolve) => {
+      let error = null;
       this.isBusy = true;
-      const userUid = this._authService.userUid;
-      firebase.database().ref(`todos/${userUid}/`).once('value', (snapshot: any) => {
-        resolve(snapshot.val());
+      firebase.database().ref(`todos/${this._authService.userUid}/`).once('value', (snapshot: any) => {
+        this.todos = snapshot.val() || todosDefaultValue;
+        this.isBusy = false;
       }).catch((reason: any) => {
-        reject(reason.toString())
+        error = reason;
+        this.isBusy = false;
       });
-      this.isBusy = false;
+      resolve(error as any)
     });
   }
 
   private _startListenTodos(): void {
-    const userUid = this._authService.userUid;
-    firebase.database().ref(`todos/${userUid}/`).on('value', (snapshot: any) => {
-      this.todos = snapshot.val() || {};
-    })
+    firebase.database().ref(`todos/${this._authService.userUid}/`).on('value', this._todosListener)
   }
 
   private _stopListenTodos(): void {
-    firebase.database().ref('todos').off();
-    console.warn('stop');
+    firebase.database().ref('todos').off('value', this._todosListener);
   }
 
   public async createTodo(title: string): Promise<any> {
@@ -65,12 +68,8 @@ export class TodoService implements ITodoService {
       firebase.database().ref(`todos/${userUid}/${newTodoKey}`).set({
         title,
         timestamp: Math.round((new Date()).getTime() / 1000)
-      }, (error) => {
-        if (error) {
-          resolve(false)
-        } else {
-          resolve(true)
-        }
+      }, (error: any) => {
+        resolve(error);
         this.isBusy = false;
       });
     });

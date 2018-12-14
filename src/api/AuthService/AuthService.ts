@@ -8,6 +8,7 @@ import {observable} from "mobx";
 export interface IAuthService extends ISupportInitialize {
   isSignedIn: boolean;
   userUid: string | undefined;
+  isBusy: boolean;
 
   signIn(): Promise<any>;
 
@@ -18,8 +19,10 @@ export interface IAuthService extends ISupportInitialize {
 export class AuthService implements IAuthService {
   @observable public isSignedIn: boolean = false;
   @observable public userUid: string | undefined = undefined;
+  @observable public isBusy: boolean = false;
 
   public async initialize(): Promise<boolean> {
+    let error = null;
     try {
       await GoogleSignin.configure();
       this.isSignedIn = await GoogleSignin.isSignedIn();
@@ -29,13 +32,15 @@ export class AuthService implements IAuthService {
         const currentUser = await firebase.auth().signInWithCredential(credential);
         this.userUid = currentUser.user.toJSON().uid;
       }
-      return true
     } catch (e) {
-      return false
+      error = e
     }
+    return error
   }
 
   public async signIn(): Promise<any> {
+    this.isBusy = true;
+    let error = null;
     try {
       let data = undefined;
       if (this.isSignedIn) {
@@ -47,28 +52,28 @@ export class AuthService implements IAuthService {
       const credential = firebase.auth.GoogleAuthProvider.credential(data.idToken, data.accessToken);
       const currentUser = await firebase.auth().signInWithCredential(credential);
       const userData = currentUser.user.toJSON();
-      await this._addNewUser(userData.uid, userData.displayName)
+      await this._addNewUser(userData.uid, userData.displayName);
       this.userUid = userData.uid;
       this.isSignedIn = true;
-      return currentUser.user.toJSON()
     } catch (e) {
-      return false
+      error = e
     }
+    this.isBusy = false;
+    return error
   }
 
   private _addNewUser = (userUid: string, displayName: string) => {
     return new Promise((resolve) => {
-      firebase.database().ref(`users/${userUid}/`).set({displayName}, (error) => {
-        if (error) {
-          resolve(false)
-        } else {
-          resolve(true)
-        }
-      });
+      firebase.database().ref(
+        `users/${userUid}/`).set({displayName},
+        (error: any) => resolve(error)
+      );
     });
-  }
+  };
 
   public async signOut(): Promise<any> {
+    this.isBusy = true;
+    let error = null;
     try {
       if (this.isSignedIn) {
         await GoogleSignin.signOut();
@@ -76,11 +81,11 @@ export class AuthService implements IAuthService {
         this.isSignedIn = false;
         this.userUid = undefined;
       }
-      return true
     } catch (e) {
-      console.warn(e);
-      return false
+      error = e
     }
+    this.isBusy = false;
+    return error
   }
 
 }

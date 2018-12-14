@@ -15,7 +15,7 @@ interface Props {
 @observer
 export class ScreenMain extends StyledComponent<Props> {
   @InjectLazy(ServiceTid.IPreferencesService) protected _preferences!: IPreferencesService;
-  @InjectLazy(ApiTid.IAuthService) private authService!: IAuthService;
+  @InjectLazy(ApiTid.IAuthService) private _authService!: IAuthService;
   @InjectLazy(ApiTid.ITodoService) private _todoService!: ITodoService;
 
 
@@ -25,79 +25,63 @@ export class ScreenMain extends StyledComponent<Props> {
     //   const nextTheme = themeName == ThemeName.Light ? ThemeName.Default : ThemeName.Light;
     //   await this._themeService.setTheme(nextTheme);
     // }, 1000);
-
-    // firebase.database().ref('Users/').set({
-    //   email: 'test',
-    // }).then((data) => {
-    //   console.warn('data ', data)
-    // }).catch((error) => {
-    //   console.warn('error ', error)
-    // })
   }
 
   signIn = async () => {
-    try {
-      const data = await this.authService.signIn();
-      console.warn('data', data);
-    } catch (e) {
-      console.warn('data error')
-    }
+    const error = await this._authService.signIn();
+    error && console.warn(error);
   }
 
   signOut = async () => {
-    await this.authService.signOut();
-    console.warn('signed out');
+    const error = await this._authService.signOut();
+    error && console.warn(error);
   }
 
-  getTodos = async () => {
-    try {
-      const todos = await this._todoService.getTodos();
-      console.warn('todos', todos);
-    } catch (e) {
-      console.warn(e)
-    }
+  updateTodos = async () => {
+    const error = await this._todoService.updateTodos();
+    error && console.warn(error);
   }
 
   createTodo = async (title: string) => {
-    try {
-      await this._todoService.createTodo(title);
-      console.warn('ok')
-    } catch (e) {
-      console.warn(e)
-    }
+    const error = await this._todoService.createTodo(title);
+    error && console.warn(error);
   }
 
   render() {
     const {styles} = this;
-    const {isSignedIn} = this.authService;
+    const {isSignedIn} = this._authService;
     return (
       <View style={styles.container}>
         <Text style={styles.instructions}>Тема: {this._themeService.themeName}</Text>
-        <Text style={styles.instructions}>isSignedIn: {isSignedIn ? 'yes' : 'no'}</Text>
-        <Text style={styles.instructions}>{this.authService.userUid}</Text>
+        <Text style={styles.instructions}>{this._authService.userUid}</Text>
 
+        {
+          isSignedIn &&
+          <React.Fragment>
+            <TouchableOpacity onPress={this.updateTodos}>
+              <Text style={styles.instructions}>updateTodos</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => this.createTodo('test_' + new Date().toString())}>
+              <Text style={styles.instructions}>createTodo</Text>
+            </TouchableOpacity>
+          </React.Fragment>
+        }
+        {
+          isSignedIn ?
+            <TouchableOpacity onPress={this.signOut}>
+              <Text style={styles.instructions}>signOut</Text>
+            </TouchableOpacity>
+            :
+            <TouchableOpacity onPress={this.signIn}>
+              <Text style={styles.instructions}>signIn</Text>
+            </TouchableOpacity>
+        }
 
-        <TouchableOpacity onPress={this.getTodos} disabled={!isSignedIn}>
-          <Text style={styles.instructions}>GetTodos</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => this.createTodo('test_' + new Date().toString())} disabled={!isSignedIn}>
-          <Text style={styles.instructions}>createTodo</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={this.signIn} disabled={isSignedIn}>
-          <Text style={styles.instructions}>signIn</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={this.signOut} disabled={!isSignedIn}>
-          <Text style={styles.instructions}>signOut</Text>
-        </TouchableOpacity>
-
-        {this._todoService.isBusy && <Text>loading...</Text>}
+        {this._todoService.isBusy || this._authService.isBusy && <Text>loading...</Text>}
 
         {
           Object.keys(this._todoService.todos).map(key => (
-            <Text>{this._todoService.todos[key].title}</Text>
+            <Text key={key}>{this._todoService.todos[key].title}</Text>
           ))
         }
 
