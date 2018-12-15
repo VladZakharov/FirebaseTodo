@@ -1,4 +1,6 @@
 export const ServiceTid = {
   IPreferencesService: 'IPreferencesService',
-  IThemeService: 'IThemeService'
+  IThemeService: 'IThemeService',
+  ITodoService: 'ITodoService',
+  IAuthService: 'IAuthService',
 };

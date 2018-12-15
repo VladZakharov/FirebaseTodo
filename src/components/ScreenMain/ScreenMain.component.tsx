@@ -4,10 +4,9 @@ import {StyledComponent} from "../index";
 import {InjectLazy} from "../../IoC";
 import {ServiceTid} from "../../service/service.module-tid";
 import {IPreferencesService} from "../../service/PreferencesService";
-import {ITodoService} from "../../api/TodoService/TodoService";
-import {IAuthService} from "../../api/AuthService/AuthService";
-import {ApiTid} from "../../api/api.module-tid";
+import {IAuthService} from "../../service/AuthService/AuthService";
 import {observer} from "mobx-react";
+import {ITodoService} from "../../service/TodoService";
 
 interface Props {
 }
@@ -15,8 +14,8 @@ interface Props {
 @observer
 export class ScreenMain extends StyledComponent<Props> {
   @InjectLazy(ServiceTid.IPreferencesService) protected _preferences!: IPreferencesService;
-  @InjectLazy(ApiTid.IAuthService) private _authService!: IAuthService;
-  @InjectLazy(ApiTid.ITodoService) private _todoService!: ITodoService;
+  @InjectLazy(ServiceTid.IAuthService) private _authService!: IAuthService;
+  @InjectLazy(ServiceTid.ITodoService) private _todoService!: ITodoService;
 
 
   async componentDidMount() {

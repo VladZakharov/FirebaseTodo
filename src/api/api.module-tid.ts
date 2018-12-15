@@ -1,4 +1,3 @@
 export const ApiTid = {
-  IAuthService: 'IAuthService',
-  ITodoService: 'ITodoService',
+  ITodoApi: 'ITodoApi',
 }

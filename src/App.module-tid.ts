@@ -1,3 +1,3 @@
-export const AppTid = {
+export const  AppTid = {
   INavigationService: 'INavigationService',
 };

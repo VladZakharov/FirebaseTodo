@@ -6,17 +6,16 @@ import App from '../App';
 import {InjectLazy} from "../IoC";
 import {IThemeService} from "../service/ThemeService";
 import {ServiceTid} from "../service/service.module-tid";
-import {IPreferencesService} from "../service/PreferencesService/Preferences.service";
-import {ApiTid} from "../api/api.module-tid";
-import {IAuthService} from "../api/AuthService/AuthService";
-import {ITodoService} from "../api/TodoService/TodoService";
+import {IPreferencesService} from "../service/PreferencesService";
+import {IAuthService} from "../service/AuthService/AuthService";
+import {ITodoService} from "../service/TodoService";
 
 class ReactApplication extends React.Component<{}, { isReady: boolean }> {
   public state = {isReady: false};
   @InjectLazy(ServiceTid.IPreferencesService) private _preferences!: IPreferencesService;
   @InjectLazy(ServiceTid.IThemeService) private _theme!: IThemeService;
-  @InjectLazy(ApiTid.IAuthService) private _authService!: IAuthService;
-  @InjectLazy(ApiTid.ITodoService) private _todoService!: ITodoService;
+  @InjectLazy(ServiceTid.ITodoService) private _todoService!: ITodoService;
+  @InjectLazy(ServiceTid.IAuthService) private _authService!: IAuthService;
 
   constructor(props: any) {
     super(props);

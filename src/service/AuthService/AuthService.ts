@@ -89,5 +89,3 @@ export class AuthService implements IAuthService {
   }
 
 }
-
-export const gAuthService = new AuthService();
