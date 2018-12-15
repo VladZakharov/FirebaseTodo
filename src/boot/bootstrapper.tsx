@@ -9,6 +9,7 @@ import {ServiceTid} from "../service/service.module-tid";
 import {IPreferencesService} from "../service/PreferencesService";
 import {IAuthService} from "../service/AuthService/AuthService";
 import {ITodoService} from "../service/TodoService";
+import firebase from "react-native-firebase";
 
 class ReactApplication extends React.Component<{}, { isReady: boolean }> {
   public state = {isReady: false};
@@ -35,6 +36,16 @@ class ReactApplication extends React.Component<{}, { isReady: boolean }> {
     await this._theme.initialize();
     await this._authService.initialize();
     await this._todoService.initialize();
+
+    const db = firebase.firestore();
+    await db.settings({
+      timestampsInSnapshots: true
+    });
+    await db.collection("users").add({
+      first: "Ada",
+      last: "Lovelace",
+      born: 1815
+    })
 
     this.setState({isReady: true})
   }

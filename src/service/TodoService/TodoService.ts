@@ -3,9 +3,9 @@ import {autorun, observable} from "mobx";
 import {TodoMap} from "./TodoService.types";
 import {ApiTid} from "../../api/api.module-tid";
 import {IAuthService} from "../AuthService/AuthService";
-import {ITodoApi} from "../../api/TodoApi/TodoApi";
 import {ISupportInitialize} from "../../shared/types";
 import {ServiceTid} from "../service.module-tid";
+import {ITodoApi} from "../../api/TodoApi/ITodoApi";
 
 export interface ITodoService extends ISupportInitialize {
   todos: TodoMap;
@@ -28,8 +28,8 @@ export class TodoService implements ITodoService {
   public async initialize(): Promise<any> {
     autorun(async () => {
       if (this._authService.isSignedIn) {
-        await this._todoApi.startListenTodos(this._authService.userUid!, (snapshot: any) => {
-          this.todos = snapshot.val() || todosDefaultValue;
+        await this._todoApi.startListenTodos(this._authService.userUid!, (todos: TodoMap) => {
+          this.todos = todos || todosDefaultValue;
         })
       } else {
         await this._todoApi.stopListenTodos();

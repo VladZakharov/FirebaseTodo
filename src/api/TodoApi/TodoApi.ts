@@ -1,49 +1,51 @@
 import firebase from "react-native-firebase";
 import {Injectable} from "../../IoC";
-
-export interface ITodoApi {
-  getTodos(userUid: string): Promise<any>;
-
-  createTodo(userUid: string, title: string, timestamp: number): Promise<any>;
-
-  startListenTodos(userUid: string, listener: any): void;
-
-  stopListenTodos(): void;
-}
+import {ITodoApi} from "./ITodoApi";
 
 @Injectable()
 export class TodoApi implements ITodoApi {
-  private _onTodosUpdatedListener!: any;
+  private _db = firebase.firestore();
+  private _onTodosUpdatedListenerUnsubscribe!: any;
 
   public async getTodos(userUid: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      firebase.database().ref(`todos/${userUid}/`).once('value', (snapshot: any) => {
-        resolve(snapshot.val());
-      }).catch((reason: any) => {
-        reject(reason)
+      this._db.collection('todos').get().then((querySnapshot) => {
+        const result: any = {};
+        querySnapshot.forEach(function (doc) {
+          result[doc.id as any] = doc.data();
+        });
+        resolve(result)
+      }).catch((error) => {
+        reject(error)
       });
     });
   }
 
   public async createTodo(userUid: string, title: string, timestamp: number): Promise<any> {
     return new Promise((resolve, reject) => {
-      const newTodoKey = firebase.database().ref().child(`todos/${userUid}`).push().key;
-      firebase.database().ref(`todos/${userUid}/${newTodoKey}`).set({
+      this._db.collection("todos").add({
         title,
         timestamp
-      }, (error: any) => {
-        error ? reject(error) : resolve()
+      }).then((docRef) => {
+        resolve(docRef)
+      }).catch((error) => {
+        reject(error)
       });
     });
   }
 
-  public startListenTodos(userUid: string, listener: any): void {
-    this._onTodosUpdatedListener = listener;
-    firebase.database().ref(`todos/${userUid}/`).on('value', listener)
+  public startListenTodos(userUid: string, onUpdate: any): void {
+    this._onTodosUpdatedListenerUnsubscribe = this._db.collection('todos').onSnapshot((querySnapshot) => {
+      const result: any = {};
+      querySnapshot.forEach(function (doc) {
+        result[doc.id as any] = doc.data();
+      });
+      onUpdate(result)
+    })
   }
 
   public stopListenTodos(): void {
-    firebase.database().ref('todos').off('value', this._onTodosUpdatedListener);
+    this._onTodosUpdatedListenerUnsubscribe && this._onTodosUpdatedListenerUnsubscribe();
   }
 
 }
