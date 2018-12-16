@@ -9,13 +9,15 @@ export class TodoApi implements ITodoApi {
 
   public async getTodos(userUid: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      this._db.collection('todos').get().then((querySnapshot) => {
-        const result: any = {};
-        querySnapshot.forEach(function (doc) {
-          result[doc.id as any] = doc.data();
-        });
-        resolve(result)
-      }).catch((error) => {
+      this._db.collection('todos')
+        .where("shared", "array-contains", userUid).get()
+        .then((querySnapshot) => {
+          const result: any = {};
+          querySnapshot.forEach(function (doc) {
+            result[doc.id as any] = doc.data();
+          });
+          resolve(result)
+        }).catch((error) => {
         reject(error)
       });
     });
@@ -25,7 +27,8 @@ export class TodoApi implements ITodoApi {
     return new Promise((resolve, reject) => {
       this._db.collection("todos").add({
         title,
-        timestamp
+        shared: [userUid],
+        timestamp,
       }).then((docRef) => {
         resolve(docRef)
       }).catch((error) => {
@@ -35,7 +38,9 @@ export class TodoApi implements ITodoApi {
   }
 
   public startListenTodos(userUid: string, onUpdate: any): void {
-    this._onTodosUpdatedListenerUnsubscribe = this._db.collection('todos').onSnapshot((querySnapshot) => {
+    this._onTodosUpdatedListenerUnsubscribe = this._db.collection('todos')
+      .where("shared", "array-contains", userUid)
+      .onSnapshot((querySnapshot) => {
       const result: any = {};
       querySnapshot.forEach(function (doc) {
         result[doc.id as any] = doc.data();

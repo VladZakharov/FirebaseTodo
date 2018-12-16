@@ -41,11 +41,6 @@ class ReactApplication extends React.Component<{}, { isReady: boolean }> {
     await db.settings({
       timestampsInSnapshots: true
     });
-    await db.collection("users").add({
-      first: "Ada",
-      last: "Lovelace",
-      born: 1815
-    })
 
     this.setState({isReady: true})
   }

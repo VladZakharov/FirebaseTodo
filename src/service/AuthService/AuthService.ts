@@ -1,9 +1,11 @@
 import firebase from "react-native-firebase";
 // @ts-ignore
 import {GoogleSignin} from "react-native-google-signin";
-import {Injectable} from "../../IoC";
+import {Injectable, InjectLazy} from "../../IoC";
 import {ISupportInitialize} from "../../shared/types";
 import {observable} from "mobx";
+import {ApiTid} from "../../api/api.module-tid";
+import {IUserApi} from "../../api/UserApi";
 
 export interface IAuthService extends ISupportInitialize {
   isSignedIn: boolean;
@@ -17,9 +19,12 @@ export interface IAuthService extends ISupportInitialize {
 
 @Injectable()
 export class AuthService implements IAuthService {
+  @InjectLazy(ApiTid.IUserApi) private _userApi!: IUserApi;
+
   @observable public isSignedIn: boolean = false;
   @observable public userUid: string | undefined = undefined;
   @observable public isBusy: boolean = false;
+
 
   public async initialize(): Promise<boolean> {
     let error = null;
@@ -29,7 +34,7 @@ export class AuthService implements IAuthService {
       if (this.isSignedIn) {
         const data = await GoogleSignin.signInSilently();
         const credential = firebase.auth.GoogleAuthProvider.credential(data.idToken, data.accessToken);
-        const currentUser = await firebase.auth().signInWithCredential(credential);
+        const currentUser = await firebase.auth().signInWithCredential(credential) as any;
         this.userUid = currentUser.user.toJSON().uid;
       }
     } catch (e) {
@@ -51,8 +56,8 @@ export class AuthService implements IAuthService {
       // @ts-ignore
       const credential = firebase.auth.GoogleAuthProvider.credential(data.idToken, data.accessToken);
       const currentUser = await firebase.auth().signInWithCredential(credential);
-      const userData = currentUser.user.toJSON();
-      await this._addNewUser(userData.uid, userData.displayName);
+      const userData = currentUser.user.toJSON() as any;
+      await this._userApi.createUser(userData.uid, userData.displayName);
       this.userUid = userData.uid;
       this.isSignedIn = true;
     } catch (e) {
@@ -61,15 +66,6 @@ export class AuthService implements IAuthService {
     this.isBusy = false;
     return error
   }
-
-  private _addNewUser = (userUid: string, displayName: string) => {
-    return new Promise((resolve) => {
-      firebase.database().ref(
-        `users/${userUid}/`).set({displayName},
-        (error: any) => resolve(error)
-      );
-    });
-  };
 
   public async signOut(): Promise<any> {
     this.isBusy = true;
