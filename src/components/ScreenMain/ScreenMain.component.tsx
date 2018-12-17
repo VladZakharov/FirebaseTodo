@@ -1,29 +1,32 @@
 import React from 'react';
 import {Text, TouchableOpacity, View} from 'react-native';
-import {StyledComponent} from "../index";
 import {InjectLazy} from "../../IoC";
 import {ServiceTid} from "../../service/service.module-tid";
-import {IPreferencesService} from "../../service/PreferencesService";
 import {IAuthService} from "../../service/AuthService/AuthService";
 import {observer} from "mobx-react";
 import {ITodoService} from "../../service/TodoService";
+import {ThemeName} from "../../theme/theme.types";
+import {styled, StyledProps} from "../";
+import {ScreenMainStyles} from "./ScreenMain.styles";
+import {IThemeService} from "../../service/ThemeService";
 
-interface Props {
+interface Props extends StyledProps {
 }
 
+@styled(ScreenMainStyles)
 @observer
-export class ScreenMain extends StyledComponent<Props> {
-  @InjectLazy(ServiceTid.IPreferencesService) protected _preferences!: IPreferencesService;
+export class ScreenMain extends React.Component<Props> {
   @InjectLazy(ServiceTid.IAuthService) private _authService!: IAuthService;
   @InjectLazy(ServiceTid.ITodoService) private _todoService!: ITodoService;
+  @InjectLazy(ServiceTid.IThemeService) private _themeService!: IThemeService;
 
 
   async componentDidMount() {
-    // setTimeout(async () => {
-    //   const themeName = this._themeService.themeName;
-    //   const nextTheme = themeName == ThemeName.Light ? ThemeName.Default : ThemeName.Light;
-    //   await this._themeService.setTheme(nextTheme);
-    // }, 1000);
+    setTimeout(async () => {
+      const themeName = this._themeService.themeName;
+      const nextTheme = themeName == ThemeName.Light ? ThemeName.Default : ThemeName.Light;
+      await this._themeService.setTheme(nextTheme);
+    }, 1000);
   }
 
   signIn = async () => {
@@ -47,7 +50,7 @@ export class ScreenMain extends StyledComponent<Props> {
   }
 
   render() {
-    const {styles} = this;
+    const {styles} = this.props;
     const {isSignedIn} = this._authService;
     return (
       <View style={styles.container}>

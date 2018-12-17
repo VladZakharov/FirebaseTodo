@@ -1,7 +1,6 @@
-import {ComponentName, ISupportInitialize, ScreenName} from "../../shared/types";
-import EStyleSheet, {AnyObject} from "react-native-extended-stylesheet";
+import {ISupportInitialize} from "../../shared/types";
+import EStyleSheet from "react-native-extended-stylesheet";
 import {Inject, Injectable} from "../../IoC";
-import {ComponentStyles} from "../../components";
 import {ThemeName, themes} from "../../theme/theme.types";
 import {ServiceTid} from "../service.module-tid";
 import {IPreferencesService} from "../PreferencesService";
@@ -12,8 +11,6 @@ export interface IThemeService extends ISupportInitialize {
   themeName: ThemeName;
 
   setTheme(themeName: ThemeName): void;
-
-  getStyles(componentName: ScreenName | ComponentName): AnyObject;
 }
 
 @Injectable()
@@ -35,9 +32,5 @@ export class ThemeService implements IThemeService {
     EStyleSheet.build(themes[themeName as ThemeName]);
     this.themeName = themeName;
     console.warn('setTheme: ' + themeName);
-  }
-
-  public getStyles(componentName: ScreenName | ComponentName): AnyObject {
-    return EStyleSheet.create(ComponentStyles[componentName] as AnyObject)
   }
 }
