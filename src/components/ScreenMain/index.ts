@@ -1,2 +1,2 @@
-export {ScreenMain} from './ScreenMain.component';
-export {ScreenMainStyles} from './ScreenMain.styles';
+export {ScreenMainStyles} from './ScreenMain.styles'
+export {ScreenMain} from './ScreenMain.component'

@@ -3,7 +3,7 @@ import {ThemeData} from '../theme.types';
 export const DarkTheme: ThemeData = {
   $colors: {
     primary:{
-      base:'#3042ff'
+      base:'#4e76ff'
     }
   },
   $icons: {}
