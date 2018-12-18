@@ -14,20 +14,25 @@ type IReactComponent<P = any> =
 type Decorator = (styles: AnyObject) => <T extends IReactComponent>(target: T) => T;
 
 export interface LocalizedProps {
-  t: (key: string) => LocaleMap
+  t: (key: string) => string
 }
 
 const decorator = (locales: LocaleMap) => (ScreenComponent: IReactComponent): IReactComponent => {
   class HOC extends React.Component<LocalizedProps> {
     @InjectLazy(ServiceTid.ILocaleService) protected _localeService!: ILocaleService;
     private readonly locales!: LocaleMap;
+    private isMount!: boolean;
+
+    componentDidMount = () => this.isMount = true;
+
+    componentWillUnmount = () => this.isMount = false;
 
     public constructor(props: any) {
       super(props);
       this.locales = locales;
       autorun(() => {
         this._localeService.locale; // для запуска autorun
-        this.forceUpdate();
+        this.isMount && this.forceUpdate();
       });
     }
 

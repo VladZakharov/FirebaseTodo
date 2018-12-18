@@ -1,16 +1,18 @@
 import React from "react";
-import {SafeAreaView, Text, TouchableOpacity} from "react-native";
-import {styled} from "../StyledComponent";
+import {styled, StyledProps} from "../StyledComponent";
 import {ScreenAuthStyles} from "./ScreenAuth.styles";
 import {InjectLazy} from "../../IoC";
 import {ServiceTid} from "../../service/service.module-tid";
 import {IAuthService} from "../../service/AuthService/AuthService";
+import {Layout} from "../Shared/Layout";
+import {Button} from "../Shared/Button";
+import {localized, LocalizedProps} from "../LocalizedComponent";
+import {ScreenAuthLocales} from "./ScreenAuth.locales";
 
-interface Props {
-
-}
+type Props = StyledProps & LocalizedProps
 
 @styled(ScreenAuthStyles)
+@localized(ScreenAuthLocales)
 export class ScreenAuth extends React.Component<Props> {
   @InjectLazy(ServiceTid.IAuthService) private _authService!: IAuthService;
 
@@ -21,11 +23,9 @@ export class ScreenAuth extends React.Component<Props> {
 
   render() {
     return (
-      <SafeAreaView style={{flex: 1, backgroundColor: '#fff'}}>
-        <TouchableOpacity onPress={this.signIn}>
-          <Text>signIn</Text>
-        </TouchableOpacity>
-      </SafeAreaView>
+      <Layout style={{justifyContent: 'center', alignItems: 'center'}}>
+        <Button content={this.props.t('SignIn')} onPress={this.signIn} />
+      </Layout>
     )
   }
 }

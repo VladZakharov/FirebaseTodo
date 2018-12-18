@@ -23,7 +23,6 @@ export class ThemeService implements IThemeService {
 
   public async initialize() {
     this.themeName = await this._preferences.get(WellKnownPreferencesKeys.AppTheme) as ThemeName;
-    console.warn('Theme: ' + this.themeName);
     EStyleSheet.build(themes[this.themeName]);
   }
 
@@ -31,6 +30,5 @@ export class ThemeService implements IThemeService {
     await this._preferences.set(WellKnownPreferencesKeys.AppTheme, themeName);
     EStyleSheet.build(themes[themeName as ThemeName]);
     this.themeName = themeName;
-    console.warn('setTheme: ' + themeName);
   }
 }

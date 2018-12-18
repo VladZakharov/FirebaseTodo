@@ -13,20 +13,25 @@ type IReactComponent<P = any> =
 type Decorator = (styles: AnyObject) => <T extends IReactComponent>(target: T) => T;
 
 export interface StyledProps {
-  styles: any
+  styles: AnyObject
 }
 
 const decorator = (styles: AnyObject) => (ScreenComponent: IReactComponent): IReactComponent => {
   class HOC extends React.Component<StyledProps> {
     @InjectLazy(ServiceTid.IThemeService) protected _themeService!: IThemeService;
     protected styles!: AnyObject;
+    private isMount!: boolean;
+
+    componentDidMount = () => this.isMount = true;
+
+    componentWillUnmount = () => this.isMount = false;
 
     public constructor(props: any) {
       super(props);
       autorun(() => {
         this._themeService.themeName;// для запуска autorun
         this.styles = EStyleSheet.create(styles);
-        this.forceUpdate();
+        this.isMount && this.forceUpdate();
       });
     }
 
