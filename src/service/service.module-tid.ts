@@ -3,4 +3,5 @@ export const ServiceTid = {
   IThemeService: 'IThemeService',
   ITodoService: 'ITodoService',
   IAuthService: 'IAuthService',
+  ILocaleService: 'ILocaleService',
 };

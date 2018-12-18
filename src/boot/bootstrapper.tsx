@@ -10,11 +10,13 @@ import {IPreferencesService} from "../service/PreferencesService";
 import {IAuthService} from "../service/AuthService/AuthService";
 import {ITodoService} from "../service/TodoService";
 import firebase from "react-native-firebase";
+import {ILocaleService} from "../service/LocaleService/Locale.service";
 
 class ReactApplication extends React.Component<{}, { isReady: boolean }> {
   public state = {isReady: false};
   @InjectLazy(ServiceTid.IPreferencesService) private _preferences!: IPreferencesService;
   @InjectLazy(ServiceTid.IThemeService) private _theme!: IThemeService;
+  @InjectLazy(ServiceTid.ILocaleService) private _locale!: ILocaleService;
   @InjectLazy(ServiceTid.ITodoService) private _todoService!: ITodoService;
   @InjectLazy(ServiceTid.IAuthService) private _authService!: IAuthService;
 
@@ -34,6 +36,7 @@ class ReactApplication extends React.Component<{}, { isReady: boolean }> {
   private async _preload() {
     await this._preferences.initialize();
     await this._theme.initialize();
+    await this._locale.initialize();
     await this._authService.initialize();
     await this._todoService.initialize();
 

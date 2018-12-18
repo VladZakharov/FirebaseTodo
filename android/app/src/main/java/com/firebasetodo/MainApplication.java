@@ -13,6 +13,7 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
+import com.reactcommunity.rnlanguages.RNLanguagesPackage;
 
 import java.util.Arrays;
 import java.util.List;
@@ -34,7 +35,8 @@ public class MainApplication extends Application implements ReactApplication {
           new RNFirebaseAuthPackage(),
           new RNFirebaseDatabasePackage(),
           new RNFirebaseFirestorePackage(),
-          new RNDefaultPreferencePackage()
+          new RNDefaultPreferencePackage(),
+          new RNLanguagesPackage()
       );
     }
 

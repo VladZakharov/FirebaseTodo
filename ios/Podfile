@@ -12,5 +12,6 @@ target 'FirebaseToDo' do
   pod 'Firebase/Database', '~> 5.11.0'
   pod 'Firebase/Firestore', '~> 5.11.0'
   pod 'RNGoogleSignin', :path => '../node_modules/react-native-google-signin'
+  pod 'RNLanguages', :path => '../node_modules/react-native-languages'
 
 end

@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@babel/runtime": "7.1.2",
+    "i18n-js": "3.1.0",
     "inversify": "5.0.1",
     "inversify-inject-decorators": "file:node_modules.private/inversify-inject-decorators",
     "mobx": "5.5.0",
@@ -20,11 +21,12 @@
     "react-native-config": "latest",
     "react-native-default-preference": "latest",
     "react-native-extended-stylesheet": "0.10.0",
-    "react-native-firebase": "^5.1.0",
+    "react-native-firebase": "5.1.0",
+    "react-native-google-signin": "react-native-community/react-native-google-signin#1.0.0",
+    "react-native-languages": "^3.0.1",
     "react-navigation": "2.17.0",
     "reflect-metadata": "0.1.12",
-    "shortid": "2.2.13",
-    "react-native-google-signin": "react-native-community/react-native-google-signin"
+    "shortid": "2.2.13"
   },
   "devDependencies": {
     "@babel/core": "7.1.2",
