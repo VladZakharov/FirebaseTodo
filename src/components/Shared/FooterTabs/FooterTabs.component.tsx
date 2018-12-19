@@ -29,22 +29,45 @@ export function createFooterTabBar(routes: TabRouteItem[], locales: LocaleMap) {
       const {props} = this;
       const activeIndex = props.navigation.state.index;
       return (
-        <View style={{padding: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
+        <View
+          style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#c694c2'}}>
           {
             routes.map((item, index) => {
               const active = activeIndex === index;
+              const color = active ? item.colorActive : item.color;
               return (
-                <TouchableHighlight key={item.routeName} onPress={() => {
-                  if (item.replaceRouteName) {
-                    this._navigation.dispatch(NavigationActions.navigate(Object.assign({}, item, {routeName: item.replaceRouteName})));
-                  } else {
-                    this._navigation.dispatch(NavigationActions.navigate(item));
-                  }
+                <View style={{
+                  flex: 1,
+                  height: '100%',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center'
                 }}>
-                  <View style={{padding: 20, backgroundColor: '#c694c2'}}>
-                    {!!item.title && <Text style={{color: '#fff'}}>{props.t(item.title)}</Text>}
-                  </View>
-                </TouchableHighlight>
+                  {index !== 0 && <View style={{height: '100%', width: 1, backgroundColor: '#fff'}} />}
+                  <TouchableHighlight
+                    key={item.routeName}
+                    style={{flex: 1}}
+                    onPress={() => {
+                      if (item.replaceRouteName) {
+                        this._navigation.dispatch(NavigationActions.navigate(Object.assign({}, item, {routeName: item.replaceRouteName})));
+                      } else {
+                        this._navigation.dispatch(NavigationActions.navigate(item));
+                      }
+                    }}
+                  >
+                    <View
+                      style={{
+                        padding: 2,
+                        backgroundColor: '#c694c2',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                      }}>
+                      {!!item.icon && item.icon(color)}
+                      {!!item.title &&
+                      <Text style={{color}}>{props.t(item.title)}</Text>}
+                    </View>
+                  </TouchableHighlight>
+                </View>
               )
             })
           }

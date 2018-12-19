@@ -6,11 +6,9 @@ export interface TabRouteItem<P = any> {
   screen: React.ComponentType<any>;
   title?: string;
   props?: P;
-  icon?: string;
-  iconColor?: string;
-  iconColorActive?: string;
-  color?: string;
-  colorActive?: string;
+  icon?: (fill?: string) => any;
+  color: string;
+  colorActive: string;
   disabled?: boolean;
   replaceRouteName?: ScreenName;
 }

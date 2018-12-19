@@ -35,6 +35,10 @@ export enum ThemeName {
 
 export type ThemeMap = { [K in ThemeName]: ThemeData };
 
+export type IconType = (width?: number, height?: number) => (fill?: string) => any;
+
+export type IconsMap = { [K in string]: IconType };
+
 type Variables = 'global';
 
 export interface ThemeVariables {
